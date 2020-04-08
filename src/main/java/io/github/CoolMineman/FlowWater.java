@@ -3,7 +3,6 @@ package io.github.CoolMineman;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,6 +11,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.WaterFluid;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class FlowWater {
@@ -24,22 +24,11 @@ public class FlowWater {
             world.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), 11);
             addWater(centerlevel, fluidPos.down(), world);
         } else {
-            BlockPos px = new BlockPos(fluidPos.getX()+1, fluidPos.getY(), fluidPos.getZ());
-            BlockPos nx = new BlockPos(fluidPos.getX()-1, fluidPos.getY(), fluidPos.getZ());
-            BlockPos pz = new BlockPos(fluidPos.getX(), fluidPos.getY(), fluidPos.getZ()+1);
-            BlockPos nz = new BlockPos(fluidPos.getX(), fluidPos.getY(), fluidPos.getZ()-1);
-            ArrayList<BlockPos> blocks = new ArrayList<BlockPos>();
-            blocks.add(px);
-            blocks.add(nx);
-            blocks.add(nz);
-            blocks.add(pz);
-            ArrayList<BlockPos> badblocks = new ArrayList<BlockPos>();
-            for (BlockPos pos : blocks) {
-                if (!(world.getBlockState(pos).canBucketPlace(Fluids.WATER))) {
-                    badblocks.add(pos);
-                }
+            ArrayList<BlockPos> blocks = new ArrayList<BlockPos>(4);
+            for (Direction dir : Direction.Type.HORIZONTAL) {
+                blocks.add(fluidPos.offset(dir));
             }
-            blocks.removeAll(badblocks);
+            blocks.removeIf(pos -> !world.getBlockState(pos).canBucketPlace(Fluids.WATER));
             Collections.shuffle(blocks);
             equalizeWater(blocks, fluidPos, world);
         }
