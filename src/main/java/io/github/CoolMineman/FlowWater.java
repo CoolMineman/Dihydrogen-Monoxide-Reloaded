@@ -20,7 +20,7 @@ public class FlowWater {
             return;
         }
         if ((world.getBlockState(fluidPos.down()).canBucketPlace(Fluids.WATER)) && (getWaterLevel(fluidPos.down(), world) != 8)) {
-            Integer centerlevel = getWaterLevel(fluidPos, world);
+            int centerlevel = getWaterLevel(fluidPos, world);
             world.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), 11);
             addWater(centerlevel, fluidPos.down(), world);
         } else {
@@ -45,10 +45,10 @@ public class FlowWater {
         }
     }
 
-    public static Integer getWaterLevel(BlockPos pos, IWorld world) {
+    public static int getWaterLevel(BlockPos pos, IWorld world) {
         BlockState blockstate = world.getBlockState(pos);
         FluidState fluidstate = blockstate.getFluidState();
-        Integer waterlevel = 0;
+        int waterlevel = 0;
         if (fluidstate.getFluid() instanceof WaterFluid.Still){
             waterlevel = 8;
         } else if (fluidstate.getFluid() instanceof WaterFluid.Flowing) {
@@ -57,7 +57,7 @@ public class FlowWater {
         return waterlevel;
     }
 
-    public static void setWaterLevel(Integer level, BlockPos pos, IWorld world) {
+    public static void setWaterLevel(int level, BlockPos pos, IWorld world) {
         if (level == 8) {
             world.setBlockState(pos, Fluids.WATER.getDefaultState().getBlockState(), 11);
         } else if (level == 0) {
@@ -69,9 +69,9 @@ public class FlowWater {
         }
     }
 
-    public static void addWater(Integer level, BlockPos pos, IWorld world) {
-        Integer existingwater = getWaterLevel(pos, world);
-        Integer totalwater = existingwater + level;
+    public static void addWater(int level, BlockPos pos, IWorld world) {
+        int existingwater = getWaterLevel(pos, world);
+        int totalwater = existingwater + level;
         if (totalwater > 8) {
             setWaterLevel(totalwater - 8, pos.up(), world);
             setWaterLevel(8, pos, world);
@@ -81,23 +81,24 @@ public class FlowWater {
     }
 
     public static void equalizeWater(ArrayList<BlockPos> blocks, BlockPos center, IWorld world) {
-        List<Integer> waterlevels = Arrays.asList(new Integer[4]);
-        Integer centerwaterlevel = getWaterLevel(center, world);
+        int[] waterlevels = new int[4];
+        Arrays.fill(waterlevels, -1);
+        int centerwaterlevel = getWaterLevel(center, world);
         for (BlockPos block : blocks) {
-            waterlevels.set(blocks.indexOf(block), getWaterLevel(block, world));
+            waterlevels[blocks.indexOf(block)] = getWaterLevel(block, world);
         }
 
-        Integer waterlevelsnum = waterlevels.size();
-        Integer didnothings = 0;
-        Integer waterlevel;
+        int waterlevelsnum = waterlevels.length;
+        int didnothings = 0;
+        int waterlevel;
         while (didnothings < waterlevelsnum) {
             didnothings = 0;
             for (int i = 0; i < 4; i++) {
-                waterlevel = waterlevels.get(i);
-                if (waterlevel != null) {
+                waterlevel = waterlevels[i];
+                if (waterlevel != -1) {
                     if ((centerwaterlevel >= (waterlevel + 2))) {
                         waterlevel += 1;
-                        waterlevels.set(i, waterlevel);
+                        waterlevels[i] = waterlevel;
                         centerwaterlevel -= 1;
                     } else {
                         didnothings += 1;
@@ -108,7 +109,7 @@ public class FlowWater {
             }
         }
         for (BlockPos block : blocks) {
-            Integer newwaterlevel = waterlevels.get(blocks.indexOf(block));
+            int newwaterlevel = waterlevels[blocks.indexOf(block)];
             setWaterLevel(newwaterlevel, block, world);
         }
         setWaterLevel(centerwaterlevel, center, world);
