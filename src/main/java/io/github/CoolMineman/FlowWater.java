@@ -6,7 +6,7 @@ import java.util.Collections;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Waterloggable;
+import net.minecraft.block.FluidFillable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.WaterFluid;
@@ -16,7 +16,7 @@ import net.minecraft.world.IWorld;
 
 public class FlowWater {
     public static void flowwater(IWorld world, BlockPos fluidPos, FluidState state) {
-        if (world.getBlockState(fluidPos).getBlock() instanceof Waterloggable) {
+        if (world.getBlockState(fluidPos).getBlock() instanceof FluidFillable) {
             return;
         }
         if ((world.getBlockState(fluidPos.down()).canBucketPlace(Fluids.WATER)) && (getWaterLevel(fluidPos.down(), world) != 8)) {
@@ -48,7 +48,9 @@ public class FlowWater {
 
     public static void setWaterLevel(int level, BlockPos pos, IWorld world) {
         if (level == 8) {
-            world.setBlockState(pos, Fluids.WATER.getDefaultState().getBlockState(), 11);
+            if (!(world.getBlockState(pos).getBlock() instanceof FluidFillable)) { // Don't fill kelp etc
+                world.setBlockState(pos, Fluids.WATER.getDefaultState().getBlockState(), 11);
+            }
         } else if (level == 0) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
         } else if (level < 8) {
