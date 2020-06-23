@@ -14,12 +14,12 @@ import net.minecraft.fluid.WaterFluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(net.minecraft.fluid.BaseFluid.class)
+@Mixin(net.minecraft.fluid.FlowableFluid.class)
 public class FlowingMixin {
     @Inject(at = @At("HEAD"), method = "canFlowThrough", cancellable = true)
     private void canFlowThrough(BlockView world, Fluid fluid, BlockPos pos, BlockState state, Direction face, BlockPos fromPos, BlockState fromState, FluidState fluidState, CallbackInfoReturnable<Boolean> bruh) {
@@ -36,7 +36,7 @@ public class FlowingMixin {
     }
 
     @Inject(at = @At("HEAD"), method = "tryFlow", cancellable = true)
-    private void tryFlow(IWorld world, BlockPos fluidPos, FluidState state, CallbackInfo bruh) {
+    private void tryFlow(WorldAccess world, BlockPos fluidPos, FluidState state, CallbackInfo bruh) {
         if ((state.getFluid() instanceof WaterFluid.Flowing) || (state.getFluid() instanceof WaterFluid.Still)) {
             FlowWater.flowwater(world, fluidPos, state);
             bruh.cancel();

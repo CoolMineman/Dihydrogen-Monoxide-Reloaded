@@ -12,10 +12,10 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.WaterFluid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class FlowWater {
-    public static void flowwater(IWorld world, BlockPos fluidPos, FluidState state) {
+    public static void flowwater(WorldAccess world, BlockPos fluidPos, FluidState state) {
         if (world.getBlockState(fluidPos).getBlock() instanceof FluidFillable) {
             return;
         }
@@ -34,7 +34,7 @@ public class FlowWater {
         }
     }
 
-    public static int getWaterLevel(BlockPos pos, IWorld world) {
+    public static int getWaterLevel(BlockPos pos, WorldAccess world) {
         BlockState blockstate = world.getBlockState(pos);
         FluidState fluidstate = blockstate.getFluidState();
         int waterlevel = 0;
@@ -46,7 +46,7 @@ public class FlowWater {
         return waterlevel;
     }
 
-    public static void setWaterLevel(int level, BlockPos pos, IWorld world) {
+    public static void setWaterLevel(int level, BlockPos pos, WorldAccess world) {
         if (level == 8) {
             if (!(world.getBlockState(pos).getBlock() instanceof FluidFillable)) { // Don't fill kelp etc
                 world.setBlockState(pos, Fluids.WATER.getDefaultState().getBlockState(), 11);
@@ -60,7 +60,7 @@ public class FlowWater {
         }
     }
 
-    public static void addWater(int level, BlockPos pos, IWorld world) {
+    public static void addWater(int level, BlockPos pos, WorldAccess world) {
         int existingwater = getWaterLevel(pos, world);
         int totalwater = existingwater + level;
         if (totalwater > 8) {
@@ -71,7 +71,7 @@ public class FlowWater {
         }
     }
 
-    public static void equalizeWater(ArrayList<BlockPos> blocks, BlockPos center, IWorld world) {
+    public static void equalizeWater(ArrayList<BlockPos> blocks, BlockPos center, WorldAccess world) {
         int[] waterlevels = new int[4];
         Arrays.fill(waterlevels, -1);
         int centerwaterlevel = getWaterLevel(center, world);
