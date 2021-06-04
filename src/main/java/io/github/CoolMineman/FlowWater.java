@@ -15,6 +15,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
 public class FlowWater {
+    private FlowWater() { }
+
     public static void flowwater(WorldAccess world, BlockPos fluidPos, FluidState state) {
         if (world.getBlockState(fluidPos).getBlock() instanceof FluidFillable) {
             return;
@@ -24,7 +26,7 @@ public class FlowWater {
             world.setBlockState(fluidPos, Blocks.AIR.getDefaultState(), 11);
             addWater(centerlevel, fluidPos.down(), world);
         } else {
-            ArrayList<BlockPos> blocks = new ArrayList<BlockPos>(4);
+            ArrayList<BlockPos> blocks = new ArrayList<>(4);
             for (Direction dir : Direction.Type.HORIZONTAL) {
                 blocks.add(fluidPos.offset(dir));
             }
